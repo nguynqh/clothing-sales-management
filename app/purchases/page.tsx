@@ -4,8 +4,7 @@ import { useState } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
-import { ArrowLeft, Plus, Search, Filter, Eye, Edit, TruckIcon, Calendar, Package } from "lucide-react"
+import { ArrowLeft, Plus, Search, Filter, Eye, Package } from "lucide-react"
 import Link from "next/link"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
@@ -13,114 +12,33 @@ export default function PurchasesPage() {
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedStatus, setSelectedStatus] = useState("all")
 
-  const purchaseOrders = [
-    {
-      id: "NH001",
-      date: "2024-01-10",
-      items: [
-        { name: "Áo sơ mi trắng", size: "M", importPrice: 200000, quantity: 20, total: 4000000 },
-        { name: "Áo sơ mi trắng", size: "L", importPrice: 220000, quantity: 15, total: 3300000 },
-      ],
-      totalAmount: 7300000,
-      status: "completed",
-      notes: "Hàng chất lượng tốt",
-    },
-    {
-      id: "NH002",
-      date: "2024-01-12",
-      items: [
-        { name: "Quần jean nam", size: "L", importPrice: 270000, quantity: 10, total: 2700000 },
-        { name: "Quần jean nam", size: "M", importPrice: 250000, quantity: 15, total: 3750000 },
-      ],
-      totalAmount: 6450000,
-      status: "completed",
-      notes: "",
-    },
-    {
-      id: "NH003",
-      date: "2024-01-13",
-      items: [
-        { name: "Váy học sinh", size: "S", importPrice: 150000, quantity: 25, total: 3750000 },
-        { name: "Váy học sinh", size: "M", importPrice: 160000, quantity: 20, total: 3200000 },
-      ],
-      totalAmount: 6950000,
-      status: "pending",
-      notes: "Chờ giao hàng",
-    },
-    {
-      id: "NH004",
-      date: "2024-01-14",
-      items: [{ name: "Đồ thể dục", size: "M", importPrice: 120000, quantity: 30, total: 3600000 }],
-      totalAmount: 3600000,
-      status: "completed",
-      notes: "",
-    },
-    {
-      id: "NH005",
-      date: "2024-01-15",
-      items: [
-        { name: "Cặp sách da", size: "Lớn", importPrice: 400000, quantity: 8, total: 3200000 },
-        { name: "Balo thể thao", size: "Vừa", importPrice: 220000, quantity: 12, total: 2640000 },
-      ],
-      totalAmount: 5840000,
-      status: "processing",
-      notes: "Đang xử lý đơn hàng",
-    },
+  const purchases = [
+    { id: "NH001", date: "10/01/2024", total: 7300000, status: "Hoàn thành" },
+    { id: "NH002", date: "12/01/2024", total: 6450000, status: "Hoàn thành" },
+    { id: "NH003", date: "13/01/2024", total: 6950000, status: "Chờ giao" },
   ]
 
-  const statuses = ["all", "completed", "pending", "processing", "cancelled"]
+  const statuses = ["all", "Hoàn thành", "Chờ giao"]
   const statusLabels = {
     all: "Tất cả",
-    completed: "Hoàn thành",
-    pending: "Chờ giao hàng",
-    processing: "Đang xử lý",
-    cancelled: "Đã hủy",
+    "Hoàn thành": "Hoàn thành",
+    "Chờ giao": "Chờ giao",
   }
 
-  const filteredOrders = purchaseOrders.filter((order) => {
-    const matchesSearch =
-      order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.items.some((item) => item.name.toLowerCase().includes(searchTerm.toLowerCase()))
-    const matchesStatus = selectedStatus === "all" || order.status === selectedStatus
+  const filteredPurchases = purchases.filter((purchase) => {
+    const matchesSearch = purchase.id.toLowerCase().includes(searchTerm.toLowerCase())
+    const matchesStatus = selectedStatus === "all" || purchase.status === selectedStatus
     return matchesSearch && matchesStatus
   })
 
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: "VND",
-    }).format(price)
-  }
+  const formatPrice = (price: number) => new Intl.NumberFormat("vi-VN").format(price) + "đ"
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("vi-VN", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-    })
-  }
+  const totalCost = filteredPurchases
+    .filter((purchase) => purchase.status === "Hoàn thành")
+    .reduce((sum, purchase) => sum + purchase.total, 0)
 
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case "completed":
-        return <Badge className="bg-green-100 text-green-800">Hoàn thành</Badge>
-      case "pending":
-        return <Badge className="bg-yellow-100 text-yellow-800">Chờ giao hàng</Badge>
-      case "processing":
-        return <Badge className="bg-blue-100 text-blue-800">Đang xử lý</Badge>
-      case "cancelled":
-        return <Badge className="bg-red-100 text-red-800">Đã hủy</Badge>
-      default:
-        return <Badge variant="secondary">{status}</Badge>
-    }
-  }
-
-  const totalCost = filteredOrders
-    .filter((order) => order.status === "completed")
-    .reduce((sum, order) => sum + order.totalAmount, 0)
-
-  const totalOrders = filteredOrders.length
-  const completedOrders = filteredOrders.filter((order) => order.status === "completed").length
+  const totalPurchases = filteredPurchases.length
+  const completedPurchases = filteredPurchases.filter((purchase) => purchase.status === "Hoàn thành").length
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -129,13 +47,13 @@ export default function PurchasesPage() {
         <div className="flex items-center justify-between p-4">
           <div className="flex items-center space-x-3">
             <Link href="/">
-              <Button variant="ghost" size="icon">
+              <Button variant="ghost" size="sm">
                 <ArrowLeft className="h-5 w-5" />
               </Button>
             </Link>
             <div>
               <h1 className="text-xl font-bold text-gray-900">Phiếu nhập hàng</h1>
-              <p className="text-sm text-gray-600">{filteredOrders.length} phiếu nhập</p>
+              <p className="text-sm text-gray-600">{filteredPurchases.length} phiếu nhập</p>
             </div>
           </div>
           <Link href="/purchases/new">
@@ -180,19 +98,19 @@ export default function PurchasesPage() {
         <div className="grid grid-cols-3 gap-3">
           <Card>
             <CardContent className="p-3">
-              <div className="text-lg font-bold">{totalOrders}</div>
+              <div className="text-lg font-bold">{totalPurchases}</div>
               <div className="text-xs text-gray-600">Tổng phiếu</div>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-3">
-              <div className="text-lg font-bold text-green-600">{completedOrders}</div>
+              <div className="text-lg font-bold text-green-600">{completedPurchases}</div>
               <div className="text-xs text-gray-600">Hoàn thành</div>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-3">
-              <div className="text-lg font-bold text-blue-600">{formatPrice(totalCost).replace("₫", "").trim()}đ</div>
+              <div className="text-lg font-bold text-blue-600">{formatPrice(totalCost)}</div>
               <div className="text-xs text-gray-600">Chi phí</div>
             </CardContent>
           </Card>
@@ -200,58 +118,26 @@ export default function PurchasesPage() {
 
         {/* Purchase Orders List */}
         <div className="space-y-3">
-          {filteredOrders.map((order) => (
-            <Card key={order.id} className="hover:shadow-md transition-shadow">
+          {filteredPurchases.map((purchase) => (
+            <Card key={purchase.id} className="hover:shadow-md transition-shadow">
               <CardContent className="p-4">
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex items-center space-x-2">
-                    <TruckIcon className="h-4 w-4 text-gray-400" />
-                    <span className="font-semibold">{order.id}</span>
-                    {getStatusBadge(order.status)}
-                  </div>
-                  <div className="flex items-center space-x-1 text-sm text-gray-500">
-                    <Calendar className="h-4 w-4" />
-                    <span>{formatDate(order.date)}</span>
-                  </div>
-                </div>
-
-                <div className="space-y-2 mb-3">
-                  {order.items.map((item, index) => (
-                    <div key={index} className="flex justify-between items-center text-sm">
-                      <div className="flex-1">
-                        <span className="font-medium">{item.name}</span>
-                        <span className="text-gray-500 ml-2">Size {item.size}</span>
-                      </div>
-                      <div className="text-right">
-                        <div>
-                          {item.quantity} x {formatPrice(item.importPrice)}
-                        </div>
-                        <div className="font-medium">{formatPrice(item.total)}</div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="flex justify-between items-center pt-2 border-t">
+                <div className="flex justify-between items-start">
                   <div>
-                    <div className="font-semibold text-lg">Tổng: {formatPrice(order.totalAmount)}</div>
-                    {order.notes && <div className="text-sm text-gray-500 italic">{order.notes}</div>}
+                    <div className="font-semibold">{purchase.id}</div>
+                    <div className="text-sm text-gray-600">{purchase.date}</div>
+                    <div className="font-semibold text-lg text-blue-600">{formatPrice(purchase.total)}</div>
+                    <div className="text-sm text-orange-600">{purchase.status}</div>
                   </div>
-                  <div className="flex space-x-2">
-                    <Button variant="outline" size="sm">
-                      <Eye className="h-4 w-4" />
-                    </Button>
-                    <Button variant="outline" size="sm">
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                  </div>
+                  <Button variant="outline" size="sm">
+                    <Eye className="h-4 w-4" />
+                  </Button>
                 </div>
               </CardContent>
             </Card>
           ))}
         </div>
 
-        {filteredOrders.length === 0 && (
+        {filteredPurchases.length === 0 && (
           <Card>
             <CardContent className="p-8 text-center">
               <Package className="h-12 w-12 text-gray-400 mx-auto mb-4" />

@@ -6,8 +6,8 @@ import "./globals.css"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Quản lý bán hàng quần áo",
-  description: "Ứng dụng quản lý bán hàng quần áo toàn diện",
+  title: "Quản lý bán hàng",
+  description: "Ứng dụng quản lý bán hàng quần áo",
     generator: 'v0.dev'
 }
 

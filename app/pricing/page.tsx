@@ -99,10 +99,7 @@ export default function PricingPage() {
   })
 
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: "VND",
-    }).format(price)
+    return new Intl.NumberFormat("vi-VN").format(price) + "đ"
   }
 
   const getMarginStatus = (margin: number) => {
@@ -119,14 +116,11 @@ export default function PricingPage() {
         <div className="flex items-center justify-between p-4">
           <div className="flex items-center space-x-3">
             <Link href="/">
-              <Button variant="ghost" size="icon">
+              <Button variant="ghost" size="sm">
                 <ArrowLeft className="h-5 w-5" />
               </Button>
             </Link>
-            <div>
-              <h1 className="text-xl font-bold text-gray-900">Quản lý đơn giá</h1>
-              <p className="text-sm text-gray-600">{filteredPricing.length} mục giá</p>
-            </div>
+            <h1 className="text-xl font-bold">Quản lý đơn giá</h1>
           </div>
           <Link href="/pricing/new">
             <Button size="sm">

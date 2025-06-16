@@ -104,6 +104,13 @@ export default function InventoryPage() {
     },
   ]
 
+  const inventory = [
+    { name: "Áo sơ mi trắng", size: "M", imported: 50, sold: 25, stock: 25, status: "Còn hàng" },
+    { name: "Quần jean nam", size: "L", imported: 30, sold: 15, stock: 15, status: "Còn hàng" },
+    { name: "Đồ thể dục", size: "M", imported: 25, sold: 17, stock: 8, status: "Sắp hết" },
+    { name: "Áo polo nam", size: "L", imported: 15, sold: 15, stock: 0, status: "Hết hàng" },
+  ]
+
   const categories = ["all", "Áo", "Quần", "Váy", "Đồ thể dục", "Cặp sách", "Balo"]
 
   const filteredInventory = inventoryData.filter((item) => {
@@ -148,6 +155,19 @@ export default function InventoryPage() {
 
   const getTurnoverRate = (sold: number, imported: number) => {
     return imported > 0 ? ((sold / imported) * 100).toFixed(1) : "0.0"
+  }
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "Còn hàng":
+        return "text-green-600"
+      case "Sắp hết":
+        return "text-yellow-600"
+      case "Hết hàng":
+        return "text-red-600"
+      default:
+        return "text-gray-600"
+    }
   }
 
   // Summary calculations
@@ -301,6 +321,24 @@ export default function InventoryPage() {
               </Card>
             )
           })}
+        </div>
+
+        {/* Updated Inventory List */}
+        <div className="space-y-3">
+          {inventory.map((item, index) => (
+            <Card key={index}>
+              <CardContent className="p-4">
+                <div className="font-semibold">{item.name}</div>
+                <div className="text-sm text-gray-600 mb-2">Size {item.size}</div>
+                <div className="grid grid-cols-3 gap-2 text-sm">
+                  <div>Nhập: {item.imported}</div>
+                  <div>Bán: {item.sold}</div>
+                  <div>Tồn: {item.stock}</div>
+                </div>
+                <div className={`text-sm font-medium mt-2 ${getStatusColor(item.status)}`}>{item.status}</div>
+              </CardContent>
+            </Card>
+          ))}
         </div>
 
         {filteredInventory.length === 0 && (

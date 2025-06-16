@@ -3,19 +3,16 @@
 import type React from "react"
 
 import { useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { ArrowLeft, Save, Plus, Minus, Trash2, ShoppingCart } from "lucide-react"
+import { ArrowLeft, Save, Plus, Minus, Trash2 } from "lucide-react"
 import Link from "next/link"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Badge } from "@/components/ui/badge"
 
 interface OrderItem {
   id: string
-  productId: string
   name: string
   size: string
   price: number
@@ -24,243 +21,158 @@ interface OrderItem {
 }
 
 export default function NewSalesOrderPage() {
-  const [orderData, setOrderData] = useState({
-    orderId: `DH${String(Date.now()).slice(-6)}`,
-    date: new Date().toISOString().split("T")[0],
-    notes: "",
-  })
-
+  const [orderId] = useState(`DH${String(Date.now()).slice(-6)}`)
   const [orderItems, setOrderItems] = useState<OrderItem[]>([])
   const [selectedProduct, setSelectedProduct] = useState("")
   const [selectedSize, setSelectedSize] = useState("")
 
-  // Mock data - trong thực tế sẽ lấy từ database
-  const availableProducts = [
+  const products = [
     { id: "SP001", name: "Áo sơ mi trắng", sizes: ["S", "M", "L"], prices: { S: 320000, M: 350000, L: 380000 } },
-    { id: "SP002", name: "Quần jean nam", sizes: ["M", "L", "XL"], prices: { M: 420000, L: 450000, XL: 480000 } },
+    { id: "SP002", name: "Quần jean nam", sizes: ["M", "L"], prices: { M: 420000, L: 450000 } },
     { id: "SP003", name: "Váy học sinh", sizes: ["S", "M"], prices: { S: 280000, M: 300000 } },
-    { id: "SP004", name: "Đồ thể dục", sizes: ["S", "M", "L"], prices: { S: 180000, M: 200000, L: 220000 } },
-    { id: "SP005", name: "Cặp sách da", sizes: ["Lớn"], prices: { Lớn: 650000 } },
-    { id: "SP006", name: "Balo thể thao", sizes: ["Vừa", "Lớn"], prices: { Vừa: 380000, Lớn: 420000 } },
   ]
 
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: "VND",
-    }).format(price)
-  }
+  const formatPrice = (price: number) => new Intl.NumberFormat("vi-VN").format(price) + "đ"
 
-  const addProductToOrder = () => {
+  const addProduct = () => {
     if (!selectedProduct || !selectedSize) return
 
-    const product = availableProducts.find((p) => p.id === selectedProduct)
+    const product = products.find((p) => p.id === selectedProduct)
     if (!product) return
 
     const price = product.prices[selectedSize as keyof typeof product.prices]
-    const existingItemIndex = orderItems.findIndex(
-      (item) => item.productId === selectedProduct && item.size === selectedSize,
-    )
-
-    if (existingItemIndex >= 0) {
-      // Nếu sản phẩm đã có, tăng số lượng
-      updateQuantity(existingItemIndex, orderItems[existingItemIndex].quantity + 1)
-    } else {
-      // Thêm sản phẩm mới
-      const newItem: OrderItem = {
-        id: `${selectedProduct}-${selectedSize}-${Date.now()}`,
-        productId: selectedProduct,
-        name: product.name,
-        size: selectedSize,
-        price: price,
-        quantity: 1,
-        total: price,
-      }
-      setOrderItems([...orderItems, newItem])
+    const newItem: OrderItem = {
+      id: `${selectedProduct}-${selectedSize}-${Date.now()}`,
+      name: product.name,
+      size: selectedSize,
+      price: price,
+      quantity: 1,
+      total: price,
     }
-
+    setOrderItems([...orderItems, newItem])
     setSelectedProduct("")
     setSelectedSize("")
   }
 
   const updateQuantity = (index: number, newQuantity: number) => {
     if (newQuantity <= 0) {
-      removeItem(index)
+      setOrderItems(orderItems.filter((_, i) => i !== index))
       return
     }
-
     const updatedItems = [...orderItems]
     updatedItems[index].quantity = newQuantity
     updatedItems[index].total = updatedItems[index].price * newQuantity
     setOrderItems(updatedItems)
   }
 
-  const removeItem = (index: number) => {
-    const updatedItems = orderItems.filter((_, i) => i !== index)
-    setOrderItems(updatedItems)
-  }
-
-  const getTotalAmount = () => {
-    return orderItems.reduce((sum, item) => sum + item.total, 0)
-  }
+  const getTotalAmount = () => orderItems.reduce((sum, item) => sum + item.total, 0)
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (orderItems.length === 0) {
-      alert("Vui lòng thêm ít nhất một sản phẩm vào đơn hàng")
+      alert("Vui lòng thêm sản phẩm")
       return
     }
-
-    const orderToSubmit = {
-      ...orderData,
-      items: orderItems,
-      totalAmount: getTotalAmount(),
-    }
-
-    console.log("Đơn hàng mới:", orderToSubmit)
-    // Xử lý lưu đơn hàng ở đây
-    alert("Đơn hàng đã được tạo thành công!")
+    console.log("Order:", { orderId, items: orderItems, total: getTotalAmount() })
+    alert("Đơn hàng đã được tạo!")
   }
 
-  const selectedProductData = availableProducts.find((p) => p.id === selectedProduct)
+  const selectedProductData = products.find((p) => p.id === selectedProduct)
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
       <header className="bg-white shadow-sm border-b sticky top-0 z-50">
-        <div className="flex items-center justify-between p-4">
-          <div className="flex items-center space-x-3">
-            <Link href="/sales">
-              <Button variant="ghost" size="icon">
-                <ArrowLeft className="h-5 w-5" />
-              </Button>
-            </Link>
-            <div>
-              <h1 className="text-xl font-bold text-gray-900">Tạo đơn bán hàng</h1>
-              <p className="text-sm text-gray-600">Tạo hóa đơn bán hàng mới</p>
-            </div>
-          </div>
+        <div className="flex items-center space-x-3 p-4">
+          <Link href="/sales">
+            <Button variant="ghost" size="sm">
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+          </Link>
+          <h1 className="text-xl font-bold">Tạo đơn hàng</h1>
         </div>
       </header>
 
       <div className="p-4 space-y-4">
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Order Info */}
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <ShoppingCart className="h-5 w-5" />
-                <span>Thông tin đơn hàng</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="orderId">Mã hóa đơn</Label>
-                  <Input
-                    id="orderId"
-                    value={orderData.orderId}
-                    onChange={(e) => setOrderData((prev) => ({ ...prev, orderId: e.target.value }))}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="date">Ngày bán</Label>
-                  <Input
-                    id="date"
-                    type="date"
-                    value={orderData.date}
-                    onChange={(e) => setOrderData((prev) => ({ ...prev, date: e.target.value }))}
-                    required
-                  />
-                </div>
+            <CardContent className="p-4">
+              <div className="space-y-2">
+                <Label>Mã đơn hàng</Label>
+                <Input value={orderId} disabled />
               </div>
             </CardContent>
           </Card>
 
-          {/* Add Product */}
           <Card>
-            <CardHeader>
-              <CardTitle>Thêm sản phẩm</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 gap-4">
-                <div className="space-y-2">
-                  <Label>Chọn sản phẩm</Label>
-                  <Select value={selectedProduct} onValueChange={setSelectedProduct}>
+            <CardContent className="p-4 space-y-4">
+              <h3 className="font-semibold">Thêm sản phẩm</h3>
+
+              <div className="space-y-3">
+                <Select value={selectedProduct} onValueChange={setSelectedProduct}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Chọn sản phẩm..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {products.map((product) => (
+                      <SelectItem key={product.id} value={product.id}>
+                        {product.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                {selectedProductData && (
+                  <Select value={selectedSize} onValueChange={setSelectedSize}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Chọn sản phẩm..." />
+                      <SelectValue placeholder="Chọn size..." />
                     </SelectTrigger>
                     <SelectContent>
-                      {availableProducts.map((product) => (
-                        <SelectItem key={product.id} value={product.id}>
-                          {product.name} ({product.id})
+                      {selectedProductData.sizes.map((size) => (
+                        <SelectItem key={size} value={size}>
+                          Size {size} -{" "}
+                          {formatPrice(selectedProductData.prices[size as keyof typeof selectedProductData.prices])}
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
-                </div>
-
-                {selectedProductData && (
-                  <div className="space-y-2">
-                    <Label>Chọn size</Label>
-                    <Select value={selectedSize} onValueChange={setSelectedSize}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Chọn size..." />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {selectedProductData.sizes.map((size) => (
-                          <SelectItem key={size} value={size}>
-                            Size {size} -{" "}
-                            {formatPrice(selectedProductData.prices[size as keyof typeof selectedProductData.prices])}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
                 )}
 
                 <Button
                   type="button"
-                  onClick={addProductToOrder}
+                  onClick={addProduct}
                   disabled={!selectedProduct || !selectedSize}
                   className="w-full"
                 >
                   <Plus className="h-4 w-4 mr-2" />
-                  Thêm vào đơn hàng
+                  Thêm vào đơn
                 </Button>
               </div>
             </CardContent>
           </Card>
 
-          {/* Order Items */}
           {orderItems.length > 0 && (
             <Card>
-              <CardHeader>
-                <CardTitle>Danh sách sản phẩm ({orderItems.length})</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
+              <CardContent className="p-4 space-y-3">
+                <h3 className="font-semibold">Sản phẩm ({orderItems.length})</h3>
                 {orderItems.map((item, index) => (
-                  <div key={item.id} className="border rounded-lg p-3 bg-gray-50">
+                  <div key={item.id} className="border rounded p-3 bg-gray-50">
                     <div className="flex justify-between items-start mb-2">
-                      <div className="flex-1">
-                        <h4 className="font-medium">{item.name}</h4>
-                        <div className="flex items-center space-x-2 text-sm text-gray-600">
-                          <Badge variant="outline">Size {item.size}</Badge>
-                          <span>{formatPrice(item.price)}</span>
+                      <div>
+                        <div className="font-medium">{item.name}</div>
+                        <div className="text-sm text-gray-600">
+                          Size {item.size} - {formatPrice(item.price)}
                         </div>
                       </div>
                       <Button
                         type="button"
                         variant="outline"
                         size="sm"
-                        onClick={() => removeItem(index)}
-                        className="text-red-600 hover:text-red-700"
+                        onClick={() => setOrderItems(orderItems.filter((_, i) => i !== index))}
+                        className="text-red-600"
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
-
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-2">
                         <Button
@@ -271,7 +183,7 @@ export default function NewSalesOrderPage() {
                         >
                           <Minus className="h-4 w-4" />
                         </Button>
-                        <span className="w-12 text-center font-medium">{item.quantity}</span>
+                        <span className="w-8 text-center">{item.quantity}</span>
                         <Button
                           type="button"
                           variant="outline"
@@ -281,49 +193,26 @@ export default function NewSalesOrderPage() {
                           <Plus className="h-4 w-4" />
                         </Button>
                       </div>
-                      <div className="text-right">
-                        <div className="font-semibold text-lg">{formatPrice(item.total)}</div>
-                      </div>
+                      <div className="font-semibold">{formatPrice(item.total)}</div>
                     </div>
                   </div>
                 ))}
-
-                {/* Total */}
-                <div className="border-t pt-3 mt-4">
-                  <div className="flex justify-between items-center">
-                    <span className="text-lg font-medium">Tổng cộng:</span>
-                    <span className="text-2xl font-bold text-green-600">{formatPrice(getTotalAmount())}</span>
-                  </div>
+                <div className="border-t pt-3 flex justify-between items-center">
+                  <span className="text-lg font-medium">Tổng:</span>
+                  <span className="text-2xl font-bold text-green-600">{formatPrice(getTotalAmount())}</span>
                 </div>
               </CardContent>
             </Card>
           )}
 
-          {/* Notes */}
-          <Card>
-            <CardContent className="p-4">
-              <div className="space-y-2">
-                <Label htmlFor="notes">Ghi chú</Label>
-                <Textarea
-                  id="notes"
-                  placeholder="Ghi chú thêm về đơn hàng (tùy chọn)"
-                  value={orderData.notes}
-                  onChange={(e) => setOrderData((prev) => ({ ...prev, notes: e.target.value }))}
-                  rows={3}
-                />
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Action Buttons */}
           <div className="space-y-3">
             <Button type="submit" className="w-full" size="lg" disabled={orderItems.length === 0}>
               <Save className="h-4 w-4 mr-2" />
-              Lưu đơn hàng ({formatPrice(getTotalAmount())})
+              Lưu đơn hàng
             </Button>
             <Link href="/sales" className="block">
               <Button variant="outline" className="w-full" size="lg">
-                Hủy bỏ
+                Hủy
               </Button>
             </Link>
           </div>
