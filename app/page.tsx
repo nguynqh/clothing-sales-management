@@ -32,7 +32,7 @@ export default function Dashboard() {
 
       {/* Main Menu */}
       <div className="p-4 space-y-3">
-        <Link href="/products">
+        {/* <Link href="/products">
           <Card className="hover:shadow-md transition-shadow">
             <CardContent className="p-4 flex items-center justify-between">
               <div className="flex items-center space-x-3">
@@ -45,9 +45,9 @@ export default function Dashboard() {
               <Plus className="h-5 w-5 text-gray-400" />
             </CardContent>
           </Card>
-        </Link>
+        </Link> */}
 
-        <Link href="/pricing">
+        {/* <Link href="/pricing">
           <Card className="hover:shadow-md transition-shadow">
             <CardContent className="p-4 flex items-center justify-between">
               <div className="flex items-center space-x-3">
@@ -60,7 +60,7 @@ export default function Dashboard() {
               <Plus className="h-5 w-5 text-gray-400" />
             </CardContent>
           </Card>
-        </Link>
+        </Link> */}
 
         <Link href="/sales">
           <Card className="hover:shadow-md transition-shadow">
@@ -77,7 +77,7 @@ export default function Dashboard() {
           </Card>
         </Link>
 
-        <Link href="/inventory-receipts">
+        {/* <Link href="/inventory-receipts">
           <Card className="hover:shadow-md transition-shadow">
             <CardContent className="p-4 flex items-center justify-between">
               <div className="flex items-center space-x-3">
@@ -90,9 +90,9 @@ export default function Dashboard() {
               <Plus className="h-5 w-5 text-gray-400" />
             </CardContent>
           </Card>
-        </Link>
+        </Link> */}
 
-        <Link href="/inventory-overview">
+        {/* <Link href="/inventory-overview">
           <Card className="hover:shadow-md transition-shadow">
             <CardContent className="p-4 flex items-center justify-between">
               <div className="flex items-center space-x-3">
@@ -105,11 +105,11 @@ export default function Dashboard() {
               <Plus className="h-5 w-5 text-gray-400" />
             </CardContent>
           </Card>
-        </Link>
+        </Link> */}
       </div>
 
       {/* Recent Activity */}
-      <div className="p-4">
+      {/* <div className="p-4">
         <Card>
           <CardHeader>
             <CardTitle className="text-lg">Hoạt động gần đây</CardTitle>
@@ -138,7 +138,7 @@ export default function Dashboard() {
             </div>
           </CardContent>
         </Card>
-      </div>
+      </div> */}
     </div>
   )
 }
