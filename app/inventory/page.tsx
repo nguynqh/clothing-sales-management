@@ -326,18 +326,16 @@ export default function InventoryPage() {
         {/* Updated Inventory List */}
         <div className="space-y-3">
           {inventory.map((item, index) => (
-            <Card key={index}>
-              <CardContent className="p-4">
-                <div className="font-semibold">{item.name}</div>
-                <div className="text-sm text-gray-600 mb-2">Size {item.size}</div>
-                <div className="grid grid-cols-3 gap-2 text-sm">
-                  <div>Nhập: {item.imported}</div>
-                  <div>Bán: {item.sold}</div>
-                  <div>Tồn: {item.stock}</div>
-                </div>
-                <div className={`text-sm font-medium mt-2 ${getStatusColor(item.status)}`}>{item.status}</div>
-              </CardContent>
-            </Card>
+            <div key={index} className="bg-white rounded-lg shadow p-4">
+              <div className="font-semibold">{item.name}</div>
+              <div className="text-sm text-gray-600 mb-2">Size {item.size}</div>
+              <div className="grid grid-cols-3 gap-2 text-sm">
+                <div>Nhập: {item.imported}</div>
+                <div>Bán: {item.sold}</div>
+                <div>Tồn: {item.stock}</div>
+              </div>
+              <div className={`text-sm font-medium mt-2 ${getStatusColor(item.status)}`}>{item.status}</div>
+            </div>
           ))}
         </div>
 

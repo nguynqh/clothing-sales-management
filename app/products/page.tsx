@@ -1,10 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { ArrowLeft, Plus, Search, Edit, Trash2 } from "lucide-react"
 import Link from "next/link"
 
 export default function ProductsPage() {
@@ -28,62 +24,49 @@ export default function ProductsPage() {
       <header className="bg-white shadow-sm border-b sticky top-0 z-50">
         <div className="flex items-center justify-between p-4">
           <div className="flex items-center space-x-3">
-            <Link href="/">
-              <Button variant="ghost" size="sm">
-                <ArrowLeft className="h-5 w-5" />
-              </Button>
+            <Link href="/" className="p-2 hover:bg-gray-100 rounded">
+              ←
             </Link>
             <div>
               <h1 className="text-xl font-bold">Sản phẩm</h1>
               <p className="text-sm text-gray-600">{filteredProducts.length} sản phẩm</p>
             </div>
           </div>
-          <Link href="/products/new">
-            <Button size="sm">
-              <Plus className="h-4 w-4 mr-1" />
-              Thêm
-            </Button>
+          <Link href="/products/new" className="bg-blue-600 text-white px-3 py-2 rounded text-sm">
+            + Thêm
           </Link>
         </div>
       </header>
 
       <div className="p-4 space-y-4">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-          <Input
-            placeholder="Tìm kiếm sản phẩm..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
-          />
-        </div>
+        <input
+          type="text"
+          placeholder="Tìm kiếm sản phẩm..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full p-3 border border-gray-300 rounded-lg"
+        />
 
         <div className="space-y-3">
           {filteredProducts.map((product) => (
-            <Card key={product.id}>
-              <CardContent className="p-4">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-lg mb-1">{product.name}</h3>
-                    <div className="text-sm text-gray-600 space-y-1">
-                      <div>
-                        {product.category} - Size {product.size}
-                      </div>
-                      <div className="font-medium text-green-600">{formatPrice(product.price)}</div>
-                      <div>Tồn: {product.stock}</div>
+            <div key={product.id} className="bg-white rounded-lg shadow p-4">
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <h3 className="font-semibold text-lg mb-1">{product.name}</h3>
+                  <div className="text-sm text-gray-600 space-y-1">
+                    <div>
+                      {product.category} - Size {product.size}
                     </div>
-                  </div>
-                  <div className="flex space-x-2">
-                    <Button variant="outline" size="sm">
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <Button variant="outline" size="sm" className="text-red-600">
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                    <div className="font-medium text-green-600">{formatPrice(product.price)}</div>
+                    <div>Tồn: {product.stock}</div>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+                <div className="flex space-x-2">
+                  <button className="p-2 border border-gray-300 rounded text-sm">✏️</button>
+                  <button className="p-2 border border-gray-300 rounded text-sm text-red-600">🗑️</button>
+                </div>
+              </div>
+            </div>
           ))}
         </div>
       </div>

@@ -1,15 +1,8 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
-import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { ArrowLeft, Save, Plus } from "lucide-react"
 import Link from "next/link"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 interface PurchaseItem {
   id: string
@@ -73,10 +66,8 @@ export default function NewPurchaseOrderPage() {
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white shadow-sm border-b sticky top-0 z-50">
         <div className="flex items-center space-x-3 p-4">
-          <Link href="/purchases">
-            <Button variant="ghost" size="sm">
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
+          <Link href="/purchases" className="p-2 hover:bg-gray-100 rounded">
+            ←
           </Link>
           <h1 className="text-xl font-bold">Tạo phiếu nhập</h1>
         </div>
@@ -84,105 +75,110 @@ export default function NewPurchaseOrderPage() {
 
       <div className="p-4 space-y-4">
         <form onSubmit={handleSubmit} className="space-y-4">
-          <Card>
-            <CardContent className="p-4">
-              <div className="space-y-2">
-                <Label>Mã phiếu nhập</Label>
-                <Input value={purchaseId} disabled />
-              </div>
-            </CardContent>
-          </Card>
+          <div className="bg-white rounded-lg shadow p-4">
+            <div className="space-y-2">
+              <label className="block text-sm font-medium">Mã phiếu nhập</label>
+              <input
+                type="text"
+                value={purchaseId}
+                disabled
+                className="w-full p-3 border border-gray-300 rounded-lg bg-gray-100"
+              />
+            </div>
+          </div>
 
-          <Card>
-            <CardContent className="p-4 space-y-4">
-              <h3 className="font-semibold">Thêm sản phẩm</h3>
+          <div className="bg-white rounded-lg shadow p-4 space-y-4">
+            <h3 className="font-semibold">Thêm sản phẩm</h3>
 
-              <div className="space-y-3">
-                <Select
-                  value={newItem.productName}
-                  onValueChange={(value) => setNewItem((prev) => ({ ...prev, productName: value }))}
+            <div className="space-y-3">
+              <select
+                value={newItem.productName}
+                onChange={(e) => setNewItem((prev) => ({ ...prev, productName: e.target.value }))}
+                className="w-full p-3 border border-gray-300 rounded-lg"
+              >
+                <option value="">Chọn sản phẩm...</option>
+                {products.map((product) => (
+                  <option key={product} value={product}>
+                    {product}
+                  </option>
+                ))}
+              </select>
+
+              <div className="grid grid-cols-2 gap-3">
+                <select
+                  value={newItem.size}
+                  onChange={(e) => setNewItem((prev) => ({ ...prev, size: e.target.value }))}
+                  className="w-full p-3 border border-gray-300 rounded-lg"
                 >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Chọn sản phẩm..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {products.map((product) => (
-                      <SelectItem key={product} value={product}>
-                        {product}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                  <option value="">Size...</option>
+                  {sizes.map((size) => (
+                    <option key={size} value={size}>
+                      {size}
+                    </option>
+                  ))}
+                </select>
 
-                <div className="grid grid-cols-2 gap-3">
-                  <Select
-                    value={newItem.size}
-                    onValueChange={(value) => setNewItem((prev) => ({ ...prev, size: value }))}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Size..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {sizes.map((size) => (
-                        <SelectItem key={size} value={size}>
-                          {size}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-
-                  <Input
-                    type="number"
-                    placeholder="Số lượng"
-                    value={newItem.quantity}
-                    onChange={(e) => setNewItem((prev) => ({ ...prev, quantity: e.target.value }))}
-                  />
-                </div>
-
-                <Input
-                  placeholder="Giá nhập (VNĐ)"
-                  value={newItem.importPrice}
-                  onChange={(e) => setNewItem((prev) => ({ ...prev, importPrice: e.target.value.replace(/\D/g, "") }))}
+                <input
+                  type="number"
+                  placeholder="Số lượng"
+                  value={newItem.quantity}
+                  onChange={(e) => setNewItem((prev) => ({ ...prev, quantity: e.target.value }))}
+                  className="w-full p-3 border border-gray-300 rounded-lg"
                 />
-
-                <Button type="button" onClick={addItem} className="w-full">
-                  <Plus className="h-4 w-4 mr-2" />
-                  Thêm vào phiếu
-                </Button>
               </div>
-            </CardContent>
-          </Card>
+
+              <input
+                type="text"
+                placeholder="Giá nhập (VNĐ)"
+                value={newItem.importPrice}
+                onChange={(e) => setNewItem((prev) => ({ ...prev, importPrice: e.target.value.replace(/\D/g, "") }))}
+                className="w-full p-3 border border-gray-300 rounded-lg"
+              />
+
+              <button
+                type="button"
+                onClick={addItem}
+                className="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700"
+              >
+                + Thêm vào phiếu
+              </button>
+            </div>
+          </div>
 
           {purchaseItems.length > 0 && (
-            <Card>
-              <CardContent className="p-4 space-y-3">
-                <h3 className="font-semibold">Sản phẩm nhập ({purchaseItems.length})</h3>
-                {purchaseItems.map((item) => (
-                  <div key={item.id} className="border rounded p-3 bg-gray-50">
-                    <div className="font-medium">{item.productName}</div>
-                    <div className="text-sm text-gray-600">
-                      Size {item.size} - SL: {item.quantity} - Giá: {formatPrice(item.importPrice)}
-                    </div>
-                    <div className="font-semibold text-blue-600">{formatPrice(item.total)}</div>
+            <div className="bg-white rounded-lg shadow p-4 space-y-3">
+              <h3 className="font-semibold">Sản phẩm nhập ({purchaseItems.length})</h3>
+              {purchaseItems.map((item) => (
+                <div key={item.id} className="border rounded p-3 bg-gray-50">
+                  <div className="font-medium">{item.productName}</div>
+                  <div className="text-sm text-gray-600">
+                    Size {item.size} - SL: {item.quantity} - Giá: {formatPrice(item.importPrice)}
                   </div>
-                ))}
-                <div className="border-t pt-3 flex justify-between items-center">
-                  <span className="text-lg font-medium">Tổng:</span>
-                  <span className="text-2xl font-bold text-blue-600">{formatPrice(getTotalAmount())}</span>
+                  <div className="font-semibold text-blue-600">{formatPrice(item.total)}</div>
                 </div>
-              </CardContent>
-            </Card>
+              ))}
+              <div className="border-t pt-3 flex justify-between items-center">
+                <span className="text-lg font-medium">Tổng:</span>
+                <span className="text-2xl font-bold text-blue-600">{formatPrice(getTotalAmount())}</span>
+              </div>
+            </div>
           )}
 
           <div className="space-y-3">
-            <Button type="submit" className="w-full" size="lg" disabled={purchaseItems.length === 0}>
-              <Save className="h-4 w-4 mr-2" />
-              Lưu phiếu nhập
-            </Button>
+            <button
+              type="submit"
+              disabled={purchaseItems.length === 0}
+              className="w-full bg-blue-600 text-white p-4 rounded-lg text-lg font-medium hover:bg-blue-700 disabled:bg-gray-400"
+            >
+              💾 Lưu phiếu nhập
+            </button>
             <Link href="/purchases" className="block">
-              <Button variant="outline" className="w-full" size="lg">
+              <button
+                type="button"
+                className="w-full border border-gray-300 p-4 rounded-lg text-lg font-medium hover:bg-gray-50"
+              >
                 Hủy
-              </Button>
+              </button>
             </Link>
           </div>
         </form>

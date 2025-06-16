@@ -1,15 +1,8 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
-import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { ArrowLeft, Save, Plus, Minus, Trash2 } from "lucide-react"
 import Link from "next/link"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 interface OrderItem {
   id: string
@@ -83,10 +76,8 @@ export default function NewSalesOrderPage() {
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white shadow-sm border-b sticky top-0 z-50">
         <div className="flex items-center space-x-3 p-4">
-          <Link href="/sales">
-            <Button variant="ghost" size="sm">
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
+          <Link href="/sales" className="p-2 hover:bg-gray-100 rounded">
+            ←
           </Link>
           <h1 className="text-xl font-bold">Tạo đơn hàng</h1>
         </div>
@@ -94,126 +85,126 @@ export default function NewSalesOrderPage() {
 
       <div className="p-4 space-y-4">
         <form onSubmit={handleSubmit} className="space-y-4">
-          <Card>
-            <CardContent className="p-4">
-              <div className="space-y-2">
-                <Label>Mã đơn hàng</Label>
-                <Input value={orderId} disabled />
-              </div>
-            </CardContent>
-          </Card>
+          <div className="bg-white rounded-lg shadow p-4">
+            <div className="space-y-2">
+              <label className="block text-sm font-medium">Mã đơn hàng</label>
+              <input
+                type="text"
+                value={orderId}
+                disabled
+                className="w-full p-3 border border-gray-300 rounded-lg bg-gray-100"
+              />
+            </div>
+          </div>
 
-          <Card>
-            <CardContent className="p-4 space-y-4">
-              <h3 className="font-semibold">Thêm sản phẩm</h3>
+          <div className="bg-white rounded-lg shadow p-4 space-y-4">
+            <h3 className="font-semibold">Thêm sản phẩm</h3>
 
-              <div className="space-y-3">
-                <Select value={selectedProduct} onValueChange={setSelectedProduct}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Chọn sản phẩm..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {products.map((product) => (
-                      <SelectItem key={product.id} value={product.id}>
-                        {product.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+            <div className="space-y-3">
+              <select
+                value={selectedProduct}
+                onChange={(e) => setSelectedProduct(e.target.value)}
+                className="w-full p-3 border border-gray-300 rounded-lg"
+              >
+                <option value="">Chọn sản phẩm...</option>
+                {products.map((product) => (
+                  <option key={product.id} value={product.id}>
+                    {product.name}
+                  </option>
+                ))}
+              </select>
 
-                {selectedProductData && (
-                  <Select value={selectedSize} onValueChange={setSelectedSize}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Chọn size..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {selectedProductData.sizes.map((size) => (
-                        <SelectItem key={size} value={size}>
-                          Size {size} -{" "}
-                          {formatPrice(selectedProductData.prices[size as keyof typeof selectedProductData.prices])}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                )}
-
-                <Button
-                  type="button"
-                  onClick={addProduct}
-                  disabled={!selectedProduct || !selectedSize}
-                  className="w-full"
+              {selectedProductData && (
+                <select
+                  value={selectedSize}
+                  onChange={(e) => setSelectedSize(e.target.value)}
+                  className="w-full p-3 border border-gray-300 rounded-lg"
                 >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Thêm vào đơn
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+                  <option value="">Chọn size...</option>
+                  {selectedProductData.sizes.map((size) => (
+                    <option key={size} value={size}>
+                      Size {size} -{" "}
+                      {formatPrice(selectedProductData.prices[size as keyof typeof selectedProductData.prices])}
+                    </option>
+                  ))}
+                </select>
+              )}
+
+              <button
+                type="button"
+                onClick={addProduct}
+                disabled={!selectedProduct || !selectedSize}
+                className="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 disabled:bg-gray-400"
+              >
+                + Thêm vào đơn
+              </button>
+            </div>
+          </div>
 
           {orderItems.length > 0 && (
-            <Card>
-              <CardContent className="p-4 space-y-3">
-                <h3 className="font-semibold">Sản phẩm ({orderItems.length})</h3>
-                {orderItems.map((item, index) => (
-                  <div key={item.id} className="border rounded p-3 bg-gray-50">
-                    <div className="flex justify-between items-start mb-2">
-                      <div>
-                        <div className="font-medium">{item.name}</div>
-                        <div className="text-sm text-gray-600">
-                          Size {item.size} - {formatPrice(item.price)}
-                        </div>
+            <div className="bg-white rounded-lg shadow p-4 space-y-3">
+              <h3 className="font-semibold">Sản phẩm ({orderItems.length})</h3>
+              {orderItems.map((item, index) => (
+                <div key={item.id} className="border rounded p-3 bg-gray-50">
+                  <div className="flex justify-between items-start mb-2">
+                    <div>
+                      <div className="font-medium">{item.name}</div>
+                      <div className="text-sm text-gray-600">
+                        Size {item.size} - {formatPrice(item.price)}
                       </div>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setOrderItems(orderItems.filter((_, i) => i !== index))}
-                        className="text-red-600"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
                     </div>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-2">
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          onClick={() => updateQuantity(index, item.quantity - 1)}
-                        >
-                          <Minus className="h-4 w-4" />
-                        </Button>
-                        <span className="w-8 text-center">{item.quantity}</span>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          onClick={() => updateQuantity(index, item.quantity + 1)}
-                        >
-                          <Plus className="h-4 w-4" />
-                        </Button>
-                      </div>
-                      <div className="font-semibold">{formatPrice(item.total)}</div>
-                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setOrderItems(orderItems.filter((_, i) => i !== index))}
+                      className="p-2 text-red-600 hover:bg-red-50 rounded"
+                    >
+                      🗑️
+                    </button>
                   </div>
-                ))}
-                <div className="border-t pt-3 flex justify-between items-center">
-                  <span className="text-lg font-medium">Tổng:</span>
-                  <span className="text-2xl font-bold text-green-600">{formatPrice(getTotalAmount())}</span>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <button
+                        type="button"
+                        onClick={() => updateQuantity(index, item.quantity - 1)}
+                        className="w-8 h-8 border border-gray-300 rounded flex items-center justify-center"
+                      >
+                        -
+                      </button>
+                      <span className="w-8 text-center">{item.quantity}</span>
+                      <button
+                        type="button"
+                        onClick={() => updateQuantity(index, item.quantity + 1)}
+                        className="w-8 h-8 border border-gray-300 rounded flex items-center justify-center"
+                      >
+                        +
+                      </button>
+                    </div>
+                    <div className="font-semibold">{formatPrice(item.total)}</div>
+                  </div>
                 </div>
-              </CardContent>
-            </Card>
+              ))}
+              <div className="border-t pt-3 flex justify-between items-center">
+                <span className="text-lg font-medium">Tổng:</span>
+                <span className="text-2xl font-bold text-green-600">{formatPrice(getTotalAmount())}</span>
+              </div>
+            </div>
           )}
 
           <div className="space-y-3">
-            <Button type="submit" className="w-full" size="lg" disabled={orderItems.length === 0}>
-              <Save className="h-4 w-4 mr-2" />
-              Lưu đơn hàng
-            </Button>
+            <button
+              type="submit"
+              disabled={orderItems.length === 0}
+              className="w-full bg-blue-600 text-white p-4 rounded-lg text-lg font-medium hover:bg-blue-700 disabled:bg-gray-400"
+            >
+              💾 Lưu đơn hàng
+            </button>
             <Link href="/sales" className="block">
-              <Button variant="outline" className="w-full" size="lg">
+              <button
+                type="button"
+                className="w-full border border-gray-300 p-4 rounded-lg text-lg font-medium hover:bg-gray-50"
+              >
                 Hủy
-              </Button>
+              </button>
             </Link>
           </div>
         </form>
