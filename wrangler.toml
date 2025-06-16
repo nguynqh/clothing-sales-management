@@ -1,0 +1,4 @@
+[[d1_databases]]
+binding = "DB"            # tên biến môi trường sẽ dùng trong code
+database_name = "cloth_inventory"    # tên database trong Cloudflare dashboard
+database_id = "16788e5d-b166-4ff0-b172-493d319a227e" # id database, lấy trên dashboard
