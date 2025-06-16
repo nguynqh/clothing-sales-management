@@ -32,20 +32,6 @@ export default function Dashboard() {
       description: "Tạo và quản lý hóa đơn bán hàng",
       color: "bg-purple-500",
     },
-    {
-      title: "Nhập hàng",
-      href: "/purchases",
-      icon: TruckIcon,
-      description: "Quản lý phiếu nhập hàng",
-      color: "bg-orange-500",
-    },
-    {
-      title: "Kho tổng quan",
-      href: "/inventory",
-      icon: BarChart3,
-      description: "Tình trạng tồn kho tổng hợp",
-      color: "bg-red-500",
-    },
   ]
 
   const stats = [
