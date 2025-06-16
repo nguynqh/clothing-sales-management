@@ -8,105 +8,105 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { ArrowLeft, Plus, Eye, Trash2, ShoppingCart } from "lucide-react"
+import { ArrowLeft, Plus, Eye, Trash2, TruckIcon } from "lucide-react"
 import Link from "next/link"
 
-interface SaleItem {
+interface ReceiptItem {
   id: string
   productName: string
   size: string
-  unitPrice: number
+  costPrice: number
   quantity: number
   total: number
 }
 
-interface Sale {
+interface InventoryReceipt {
   id: string
-  saleDate: string
-  items: SaleItem[]
+  receiptDate: string
+  items: ReceiptItem[]
   totalAmount: number
   notes: string
 }
 
-export default function SalesPage() {
-  const [sales, setSales] = useState<Sale[]>([
+export default function InventoryReceiptsPage() {
+  const [receipts, setReceipts] = useState<InventoryReceipt[]>([
     {
-      id: "HD001",
-      saleDate: "2024-01-15",
+      id: "PN001",
+      receiptDate: "2024-01-10",
       items: [
         {
           id: "1",
           productName: "Áo sơ mi trắng",
           size: "M",
-          unitPrice: 150000,
-          quantity: 2,
-          total: 300000,
+          costPrice: 80000,
+          quantity: 20,
+          total: 1600000,
         },
         {
           id: "2",
           productName: "Váy học sinh",
           size: "S",
-          unitPrice: 200000,
-          quantity: 1,
-          total: 200000,
+          costPrice: 120000,
+          quantity: 15,
+          total: 1800000,
         },
       ],
-      totalAmount: 500000,
-      notes: "Khách hàng thân thiết",
+      totalAmount: 3400000,
+      notes: "Nhập hàng đầu tháng",
     },
     {
-      id: "HD002",
-      saleDate: "2024-01-15",
+      id: "PN002",
+      receiptDate: "2024-01-12",
       items: [
         {
           id: "3",
           productName: "Balo học sinh",
           size: "One Size",
-          unitPrice: 350000,
-          quantity: 1,
-          total: 350000,
+          costPrice: 200000,
+          quantity: 10,
+          total: 2000000,
         },
       ],
-      totalAmount: 350000,
+      totalAmount: 2000000,
       notes: "",
     },
   ])
 
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false)
-  const [selectedSale, setSelectedSale] = useState<Sale | null>(null)
-  const [newSale, setNewSale] = useState<Omit<Sale, "id">>({
-    saleDate: new Date().toISOString().split("T")[0],
+  const [selectedReceipt, setSelectedReceipt] = useState<InventoryReceipt | null>(null)
+  const [newReceipt, setNewReceipt] = useState<Omit<InventoryReceipt, "id">>({
+    receiptDate: new Date().toISOString().split("T")[0],
     items: [],
     totalAmount: 0,
     notes: "",
   })
-  const [currentItem, setCurrentItem] = useState<Omit<SaleItem, "id" | "total">>({
+  const [currentItem, setCurrentItem] = useState<Omit<ReceiptItem, "id" | "total">>({
     productName: "",
     size: "",
-    unitPrice: 0,
+    costPrice: 0,
     quantity: 1,
   })
 
   const products = [
-    { name: "Áo sơ mi trắng", sizes: ["S", "M", "L"], price: 150000 },
-    { name: "Váy học sinh", sizes: ["S", "M", "L"], price: 200000 },
-    { name: "Balo học sinh", sizes: ["One Size"], price: 350000 },
-    { name: "Quần âu", sizes: ["S", "M", "L", "XL"], price: 180000 },
+    { name: "Áo sơ mi trắng", sizes: ["S", "M", "L"], costPrice: 80000 },
+    { name: "Váy học sinh", sizes: ["S", "M", "L"], costPrice: 120000 },
+    { name: "Balo học sinh", sizes: ["One Size"], costPrice: 200000 },
+    { name: "Quần âu", sizes: ["S", "M", "L", "XL"], costPrice: 100000 },
   ]
 
   const handleAddItem = () => {
     if (currentItem.productName && currentItem.size && currentItem.quantity > 0) {
-      const item: SaleItem = {
+      const item: ReceiptItem = {
         ...currentItem,
         id: Date.now().toString(),
-        total: currentItem.unitPrice * currentItem.quantity,
+        total: currentItem.costPrice * currentItem.quantity,
       }
-      const updatedItems = [...newSale.items, item]
+      const updatedItems = [...newReceipt.items, item]
       const totalAmount = updatedItems.reduce((sum, item) => sum + item.total, 0)
 
-      setNewSale({
-        ...newSale,
+      setNewReceipt({
+        ...newReceipt,
         items: updatedItems,
         totalAmount,
       })
@@ -114,18 +114,18 @@ export default function SalesPage() {
       setCurrentItem({
         productName: "",
         size: "",
-        unitPrice: 0,
+        costPrice: 0,
         quantity: 1,
       })
     }
   }
 
   const handleRemoveItem = (itemId: string) => {
-    const updatedItems = newSale.items.filter((item) => item.id !== itemId)
+    const updatedItems = newReceipt.items.filter((item) => item.id !== itemId)
     const totalAmount = updatedItems.reduce((sum, item) => sum + item.total, 0)
 
-    setNewSale({
-      ...newSale,
+    setNewReceipt({
+      ...newReceipt,
       items: updatedItems,
       totalAmount,
     })
@@ -136,20 +136,20 @@ export default function SalesPage() {
     setCurrentItem({
       ...currentItem,
       productName,
-      unitPrice: product?.price || 0,
+      costPrice: product?.costPrice || 0,
       size: "",
     })
   }
 
-  const handleSaveSale = () => {
-    if (newSale.items.length > 0) {
-      const sale: Sale = {
-        ...newSale,
-        id: `HD${String(sales.length + 1).padStart(3, "0")}`,
+  const handleSaveReceipt = () => {
+    if (newReceipt.items.length > 0) {
+      const receipt: InventoryReceipt = {
+        ...newReceipt,
+        id: `PN${String(receipts.length + 1).padStart(3, "0")}`,
       }
-      setSales([sale, ...sales])
-      setNewSale({
-        saleDate: new Date().toISOString().split("T")[0],
+      setReceipts([receipt, ...receipts])
+      setNewReceipt({
+        receiptDate: new Date().toISOString().split("T")[0],
         items: [],
         totalAmount: 0,
         notes: "",
@@ -158,42 +158,42 @@ export default function SalesPage() {
     }
   }
 
-  const handleViewSale = (sale: Sale) => {
-    setSelectedSale(sale)
+  const handleViewReceipt = (receipt: InventoryReceipt) => {
+    setSelectedReceipt(receipt)
     setIsViewDialogOpen(true)
   }
 
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-purple-600 text-white p-4 flex items-center">
+      <div className="bg-orange-600 text-white p-4 flex items-center">
         <Link href="/">
           <ArrowLeft className="h-6 w-6 mr-3" />
         </Link>
-        <h1 className="text-xl font-bold">Đơn bán hàng</h1>
+        <h1 className="text-xl font-bold">Phiếu nhập hàng</h1>
       </div>
 
       {/* Add Button */}
       <div className="p-4">
         <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="w-full bg-purple-600 hover:bg-purple-700">
+            <Button className="w-full bg-orange-600 hover:bg-orange-700">
               <Plus className="h-4 w-4 mr-2" />
-              Tạo hóa đơn mới
+              Tạo phiếu nhập mới
             </Button>
           </DialogTrigger>
           <DialogContent className="max-w-sm mx-auto max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>Tạo hóa đơn mới</DialogTitle>
+              <DialogTitle>Tạo phiếu nhập mới</DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
               <div>
-                <Label htmlFor="saleDate">Ngày bán</Label>
+                <Label htmlFor="receiptDate">Ngày nhập</Label>
                 <Input
-                  id="saleDate"
+                  id="receiptDate"
                   type="date"
-                  value={newSale.saleDate}
-                  onChange={(e) => setNewSale({ ...newSale, saleDate: e.target.value })}
+                  value={newReceipt.receiptDate}
+                  onChange={(e) => setNewReceipt({ ...newReceipt, receiptDate: e.target.value })}
                 />
               </div>
 
@@ -242,11 +242,11 @@ export default function SalesPage() {
 
                   <div className="grid grid-cols-2 gap-2">
                     <div>
-                      <Label>Đơn giá</Label>
+                      <Label>Giá nhập</Label>
                       <Input
                         type="number"
-                        value={currentItem.unitPrice}
-                        onChange={(e) => setCurrentItem({ ...currentItem, unitPrice: Number(e.target.value) })}
+                        value={currentItem.costPrice}
+                        onChange={(e) => setCurrentItem({ ...currentItem, costPrice: Number(e.target.value) })}
                       />
                     </div>
                     <div>
@@ -262,22 +262,22 @@ export default function SalesPage() {
 
                   <Button onClick={handleAddItem} className="w-full" size="sm">
                     <Plus className="h-4 w-4 mr-2" />
-                    Thêm vào hóa đơn
+                    Thêm vào phiếu nhập
                   </Button>
                 </div>
               </div>
 
               {/* Items List */}
-              {newSale.items.length > 0 && (
+              {newReceipt.items.length > 0 && (
                 <div className="border-t pt-4">
                   <h4 className="font-semibold mb-3">Danh sách sản phẩm</h4>
                   <div className="space-y-2">
-                    {newSale.items.map((item) => (
+                    {newReceipt.items.map((item) => (
                       <div key={item.id} className="flex justify-between items-center p-2 bg-gray-50 rounded">
                         <div className="flex-1">
                           <p className="font-medium text-sm">{item.productName}</p>
                           <p className="text-xs text-gray-600">
-                            {item.size} - {item.quantity} x {item.unitPrice.toLocaleString("vi-VN")}đ
+                            {item.size} - {item.quantity} x {item.costPrice.toLocaleString("vi-VN")}đ
                           </p>
                         </div>
                         <div className="text-right">
@@ -290,7 +290,9 @@ export default function SalesPage() {
                     ))}
                   </div>
                   <div className="mt-3 p-2 bg-blue-50 rounded">
-                    <p className="font-bold text-center">Tổng cộng: {newSale.totalAmount.toLocaleString("vi-VN")}đ</p>
+                    <p className="font-bold text-center">
+                      Tổng cộng: {newReceipt.totalAmount.toLocaleString("vi-VN")}đ
+                    </p>
                   </div>
                 </div>
               )}
@@ -299,39 +301,39 @@ export default function SalesPage() {
                 <Label htmlFor="notes">Ghi chú</Label>
                 <Textarea
                   id="notes"
-                  value={newSale.notes}
-                  onChange={(e) => setNewSale({ ...newSale, notes: e.target.value })}
+                  value={newReceipt.notes}
+                  onChange={(e) => setNewReceipt({ ...newReceipt, notes: e.target.value })}
                   placeholder="Ghi chú thêm..."
                   rows={3}
                 />
               </div>
 
-              <Button onClick={handleSaveSale} className="w-full" disabled={newSale.items.length === 0}>
-                <ShoppingCart className="h-4 w-4 mr-2" />
-                Lưu hóa đơn
+              <Button onClick={handleSaveReceipt} className="w-full" disabled={newReceipt.items.length === 0}>
+                <TruckIcon className="h-4 w-4 mr-2" />
+                Lưu phiếu nhập
               </Button>
             </div>
           </DialogContent>
         </Dialog>
       </div>
 
-      {/* Sales List */}
+      {/* Receipts List */}
       <div className="p-4 space-y-3">
-        {sales.map((sale) => (
-          <Card key={sale.id}>
+        {receipts.map((receipt) => (
+          <Card key={receipt.id}>
             <CardContent className="p-4">
               <div className="flex justify-between items-start mb-3">
                 <div>
-                  <h3 className="font-semibold text-lg">#{sale.id}</h3>
-                  <p className="text-sm text-gray-600">{sale.saleDate}</p>
+                  <h3 className="font-semibold text-lg">#{receipt.id}</h3>
+                  <p className="text-sm text-gray-600">{receipt.receiptDate}</p>
                 </div>
-                <Button variant="ghost" size="sm" onClick={() => handleViewSale(sale)}>
+                <Button variant="ghost" size="sm" onClick={() => handleViewReceipt(receipt)}>
                   <Eye className="h-4 w-4" />
                 </Button>
               </div>
 
               <div className="space-y-2 mb-3">
-                {sale.items.map((item) => (
+                {receipt.items.map((item) => (
                   <div key={item.id} className="flex justify-between text-sm">
                     <span>
                       {item.productName} ({item.size}) x{item.quantity}
@@ -343,48 +345,50 @@ export default function SalesPage() {
 
               <div className="border-t pt-2">
                 <div className="flex justify-between items-center">
-                  <span className="font-semibold">Tổng cộng:</span>
-                  <span className="font-bold text-lg text-green-600">{sale.totalAmount.toLocaleString("vi-VN")}đ</span>
+                  <span className="font-semibold">Tổng tiền nhập:</span>
+                  <span className="font-bold text-lg text-blue-600">
+                    {receipt.totalAmount.toLocaleString("vi-VN")}đ
+                  </span>
                 </div>
               </div>
 
-              {sale.notes && (
+              {receipt.notes && (
                 <div className="mt-3 p-2 bg-gray-50 rounded">
-                  <p className="text-sm text-gray-600">{sale.notes}</p>
+                  <p className="text-sm text-gray-600">{receipt.notes}</p>
                 </div>
               )}
             </CardContent>
           </Card>
         ))}
 
-        {sales.length === 0 && (
+        {receipts.length === 0 && (
           <div className="text-center py-8">
-            <p className="text-gray-500">Chưa có hóa đơn nào</p>
+            <p className="text-gray-500">Chưa có phiếu nhập nào</p>
           </div>
         )}
       </div>
 
-      {/* View Sale Dialog */}
+      {/* View Receipt Dialog */}
       <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
         <DialogContent className="max-w-sm mx-auto">
           <DialogHeader>
-            <DialogTitle>Chi tiết hóa đơn #{selectedSale?.id}</DialogTitle>
+            <DialogTitle>Chi tiết phiếu nhập #{selectedReceipt?.id}</DialogTitle>
           </DialogHeader>
-          {selectedSale && (
+          {selectedReceipt && (
             <div className="space-y-4">
               <div>
-                <p className="text-sm text-gray-600">Ngày bán: {selectedSale.saleDate}</p>
+                <p className="text-sm text-gray-600">Ngày nhập: {selectedReceipt.receiptDate}</p>
               </div>
 
               <div>
                 <h4 className="font-semibold mb-2">Danh sách sản phẩm:</h4>
                 <div className="space-y-2">
-                  {selectedSale.items.map((item) => (
+                  {selectedReceipt.items.map((item) => (
                     <div key={item.id} className="flex justify-between text-sm p-2 bg-gray-50 rounded">
                       <div>
                         <p className="font-medium">{item.productName}</p>
                         <p className="text-gray-600">
-                          Size: {item.size} | SL: {item.quantity} | Đơn giá: {item.unitPrice.toLocaleString("vi-VN")}đ
+                          Size: {item.size} | SL: {item.quantity} | Giá nhập: {item.costPrice.toLocaleString("vi-VN")}đ
                         </p>
                       </div>
                       <div className="text-right">
@@ -397,17 +401,17 @@ export default function SalesPage() {
 
               <div className="border-t pt-3">
                 <div className="flex justify-between items-center">
-                  <span className="font-bold">Tổng cộng:</span>
-                  <span className="font-bold text-lg text-green-600">
-                    {selectedSale.totalAmount.toLocaleString("vi-VN")}đ
+                  <span className="font-bold">Tổng tiền nhập:</span>
+                  <span className="font-bold text-lg text-blue-600">
+                    {selectedReceipt.totalAmount.toLocaleString("vi-VN")}đ
                   </span>
                 </div>
               </div>
 
-              {selectedSale.notes && (
+              {selectedReceipt.notes && (
                 <div>
                   <h4 className="font-semibold mb-2">Ghi chú:</h4>
-                  <p className="text-sm text-gray-600 p-2 bg-gray-50 rounded">{selectedSale.notes}</p>
+                  <p className="text-sm text-gray-600 p-2 bg-gray-50 rounded">{selectedReceipt.notes}</p>
                 </div>
               )}
             </div>
