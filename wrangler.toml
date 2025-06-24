@@ -1,0 +1,8 @@
+name = "clothing-sales-management"
+
+[[ d1_databases ]]
+binding = "DB"
+database_name = "cloth_inventory"
+database_id = "16788e5d-b166-4ff0-b172-493d319a227e"
+
+pages_build_output_dir = "out"
