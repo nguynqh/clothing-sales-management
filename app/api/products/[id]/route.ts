@@ -3,6 +3,26 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getDb, DatabaseHelper } from '@/lib/db';
 import { Product, ApiResponse, CreateProductRequest } from '@/lib/types/database';
 
+export async function generateStaticParams() {
+  // Option A: Return empty array nếu không biết trước IDs
+  return [];
+  
+  // Option B: Return một số IDs cố định nếu biết trước
+  // return [
+  //   { id: '1' },
+  //   { id: '2' },
+  //   { id: '3' },
+  // ];
+  
+  // Option C: Fetch từ database (nếu có thể trong build time)
+  // try {
+  //   const products = await getProductsFromDB(); // implement function này
+  //   return products.map(product => ({ id: product.id.toString() }));
+  // } catch (error) {
+  //   return [];
+  // }
+}
+
 export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
@@ -151,24 +171,4 @@ export async function DELETE(
     };
     return NextResponse.json(response, { status: 500 });
   }
-}
-
-export async function generateStaticParams() {
-  // Option A: Return empty array nếu không biết trước IDs
-  return [];
-  
-  // Option B: Return một số IDs cố định nếu biết trước
-  // return [
-  //   { id: '1' },
-  //   { id: '2' },
-  //   { id: '3' },
-  // ];
-  
-  // Option C: Fetch từ database (nếu có thể trong build time)
-  // try {
-  //   const products = await getProductsFromDB(); // implement function này
-  //   return products.map(product => ({ id: product.id.toString() }));
-  // } catch (error) {
-  //   return [];
-  // }
 }
