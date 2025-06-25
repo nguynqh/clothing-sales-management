@@ -10,6 +10,10 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  trailingSlash: true,
+  // experimental: {
+  //   runtime: 'experimental-edge',
+  // }
 }
 
 export default nextConfig
