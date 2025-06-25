@@ -7,6 +7,7 @@ export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
+  const { id } = params;
   try {
     const db = getDb();
     const helper = new DatabaseHelper(db);
@@ -29,13 +30,13 @@ export async function GET(
       data: products[0]
     };
 
-    return NextResponse.json(response);
+    return NextResponse.json({ id, message: 'Product found' }, { status: 200 });
   } catch (error) {
     const response: ApiResponse<null> = {
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error'
     };
-    return NextResponse.json(response, { status: 500 });
+    return NextResponse.json({ error: 'Product not found' }, { status: 404 });
   }
 }
 
@@ -43,6 +44,7 @@ export async function PUT(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
+  const { id } = params;
   try {
     const db = getDb();
     const helper = new DatabaseHelper(db);
@@ -118,6 +120,7 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
+  const { id } = params;
   try {
     const db = getDb();
     const helper = new DatabaseHelper(db);
@@ -148,4 +151,24 @@ export async function DELETE(
     };
     return NextResponse.json(response, { status: 500 });
   }
+}
+
+export async function generateStaticParams() {
+  // Option A: Return empty array nếu không biết trước IDs
+  return [];
+  
+  // Option B: Return một số IDs cố định nếu biết trước
+  // return [
+  //   { id: '1' },
+  //   { id: '2' },
+  //   { id: '3' },
+  // ];
+  
+  // Option C: Fetch từ database (nếu có thể trong build time)
+  // try {
+  //   const products = await getProductsFromDB(); // implement function này
+  //   return products.map(product => ({ id: product.id.toString() }));
+  // } catch (error) {
+  //   return [];
+  // }
 }
