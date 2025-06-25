@@ -11,9 +11,8 @@ const nextConfig = {
     unoptimized: true,
   },
   trailingSlash: true,
-  // experimental: {
-  //   runtime: 'experimental-edge',
-  // }
+  assetPrefix: '',
+  basePath: '',
 }
 
 export default nextConfig
